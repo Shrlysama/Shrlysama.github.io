@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3x + 1 Problem Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div style="width: 800px;">
+        <canvas id="myChart"></canvas>
+    </div>
+    
+    <button id="saveChart">Save as PNG</button>
+
+    <script>
+        function collatzIterations(n) {
+            let steps = 0;
+            while (n !== 1) {
+                if (n % 2 === 0) {
+                    n = n / 2;
+                } else {
+                    n = 3 * n + 1;
+                }
+                steps++;
+            }
+            return steps;
+        }
+
+        // Generate data for the first N numbers
+        const N = 1000; 
+        const labels = Array.from({ length: N }, (_, i) => i + 1);
+        const data = labels.map(collatzIterations); // Map each number to its iterations
+
+        // Create the chart
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                labels: labels, // X-axis
+                datasets: [{
+                    label: 'Collatz Iterations',
+                    data: data, // Y-axis
+                    borderColor: 'rgba(0, 0, 0, 1)',
+                    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                    borderWidth: 0.8,
+                    fill: true
+                }]
+            },
+            options: {
+                aspectRatio: 1,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        grid: {
+                            drawOnChartArea: false,
+                            color: 'rgba(0, 0, 0, 0.8)'
+                        },
+                        beginAtZero: false,
+                        title: {
+                            display: false,
+                            text: 'Iterations'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            drawOnChartArea: false,
+                            color: 'rgba(0, 0, 0, 1)'
+                        },
+                        title: {
+                            display: false,
+                            text: 'Number'
+                        }
+                    }
+                },
+                elements: {
+                    point: {
+                        pointStyle: 'rectRounded',
+                        radius: 2
+                    }
+                }
+            }
+        });
+
+        // Function to save the chart as PNG
+        document.getElementById('saveChart').addEventListener('click', function() {
+            // Get the canvas element
+            const canvas = document.getElementById('myChart');
+            
+            // Convert the canvas to a data URL (base64)
+            const imageURL = canvas.toDataURL('image/png');
+            
+            // Create a temporary link element
+            const link = document.createElement('a');
+            link.href = imageURL;
+            link.download = 'collatz_chart.png';  // Filename for the download
+            
+            // Trigger the download
+            link.click();
+        });
+    </script>
+</body>
+</html>
